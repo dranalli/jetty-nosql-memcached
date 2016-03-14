@@ -1,7 +1,7 @@
 package org.eclipse.jetty.nosql.kvs.session.kryo;
 
-import org.eclipse.jetty.nosql.kvs.session.ISerializableSession;
 import org.eclipse.jetty.nosql.kvs.session.AbstractSessionFactory;
+import org.eclipse.jetty.nosql.kvs.session.ISerializableSession;
 import org.eclipse.jetty.nosql.kvs.session.ISerializationTranscoder;
 import org.eclipse.jetty.nosql.kvs.session.TranscoderException;
 
@@ -11,9 +11,18 @@ public class KryoSessionFactory extends AbstractSessionFactory {
   }
 
   public KryoSessionFactory(ClassLoader cl) {
-    super(new KryoTranscoder(cl));
+    this( null, cl);
+  }
+  
+  public KryoSessionFactory(KryoConfig config) {
+    this( config, Thread.currentThread().getContextClassLoader());
+  }
+  
+  public KryoSessionFactory(KryoConfig config, ClassLoader cl) {
+    super(new KryoTranscoder(config, cl));
   }
 
+  @Override
   public ISerializableSession create() {
     return new KryoSession();
   }
