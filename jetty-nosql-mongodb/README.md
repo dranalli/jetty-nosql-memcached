@@ -1,6 +1,4 @@
-# jetty-nosql-memcached
-
-[![Build Status](https://secure.travis-ci.org/yyuu/jetty-nosql-memcached.png?branch=master)](http://travis-ci.org/yyuu/jetty-nosql-memcached)
+# jetty-nosql-memcached - mongodb
 
 ## Overview
 
@@ -12,11 +10,6 @@ Additionally, it minimizes reads and writes of sessions based on if the session 
 
 jetty-nosql-memcached is an extension for Jetty.
 You have to install jars into jetty's `${jetty.home}/lib/ext`.
-
-Built jars of jetty-nosql-memcached can be found on Maven Central.
-You can install one of them without building.
-
-- http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22jetty-nosql-memcached%22
 
 *NOTE*
 
