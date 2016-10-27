@@ -180,7 +180,7 @@ public class MongoSessionManager extends KeyValueStoreSessionManager {
     
     private String getBareSessionHash( Map<String, Object> attributes ) {
       byte[] atts = getSessionFactory().pack( new SerializableSession( new HashMap<>( attributes ) ) );
-      return Hash.getMD5Hex( atts ); 
+      return Hash.getHashedHex( atts ); 
     }
     
     private static class SerializableSession implements ISerializableSession {

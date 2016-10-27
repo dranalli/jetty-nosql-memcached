@@ -35,6 +35,7 @@ public class HashMapClient extends AbstractMemcachedClient {
 		super(serverString);
 	}
 
+	@Override
 	public boolean establish() throws KeyValueStoreClientException {
 		if (isAlive()) {
 			shutdown();
@@ -42,14 +43,17 @@ public class HashMapClient extends AbstractMemcachedClient {
 		return true;
 	}
 
+	@Override
 	public boolean shutdown() throws KeyValueStoreClientException {
 		return true;
 	}
 
+	@Override
 	public boolean isAlive() {
 		return data != null;
 	}
 
+	@Override
 	public byte[] get(String key) throws KeyValueStoreClientException {
 		if (!isAlive()) {
 			throw(new KeyValueStoreClientException(new IllegalStateException("client not established")));
@@ -69,11 +73,13 @@ public class HashMapClient extends AbstractMemcachedClient {
 		return raw;
 	}
 
-	public boolean set(String key, byte[] raw) throws KeyValueStoreClientException {
-		return this.set(key, raw, FOREVER);
+	@Override
+	public boolean set(String key, long version, byte[] raw) throws KeyValueStoreClientException {
+		return this.set(key, 0, raw, FOREVER);
 	}
 
-	public boolean set(String key, byte[] raw, int exp) throws KeyValueStoreClientException {
+	@Override
+	public boolean set(String key, long version, byte[] raw, int exp) throws KeyValueStoreClientException {
 		if (!isAlive()) {
 			throw(new KeyValueStoreClientException(new IllegalStateException("client not established")));
 		}
@@ -81,11 +87,13 @@ public class HashMapClient extends AbstractMemcachedClient {
 		return true;
 	}
 
-	public boolean add(String key, byte[] raw) throws KeyValueStoreClientException {
-		return this.add(key, raw, FOREVER);
+	@Override
+	public boolean add(String key, long version, byte[] raw) throws KeyValueStoreClientException {
+		return this.add(key, version, raw, FOREVER);
 	}
 
-	public boolean add(String key, byte[] raw, int exp) throws KeyValueStoreClientException {
+	@Override
+	public boolean add(String key, long version, byte[] raw, int exp) throws KeyValueStoreClientException {
 		if (!isAlive()) {
 			throw(new KeyValueStoreClientException(new IllegalStateException("client not established")));
 		}
@@ -99,7 +107,8 @@ public class HashMapClient extends AbstractMemcachedClient {
 		return notExists;
 	}
 
-	public boolean delete(String key) throws KeyValueStoreClientException {
+	@Override
+  public boolean delete(String key) throws KeyValueStoreClientException {
 		if (!isAlive()) {
 			throw(new KeyValueStoreClientException(new IllegalStateException("client not established")));
 		}
@@ -123,4 +132,16 @@ public class HashMapClient extends AbstractMemcachedClient {
 		}
 		return timestamp;
 	}
+  
+    @Override
+    public boolean exists( String key ) throws KeyValueStoreClientException {
+      synchronized(data) {
+          return data.containsKey(key);
+      }
+    }
+  
+    @Override
+    public long version( String key ) {
+      return 0;
+    }
 }

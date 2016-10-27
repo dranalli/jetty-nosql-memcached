@@ -4,8 +4,8 @@ import java.util.Calendar;
 
 import javax.naming.InitialContext;
 
-import org.eclipse.jetty.nosql.ext.IExtKeyValueStoreClient;
 import org.eclipse.jetty.nosql.kvs.AbstractKeyValueStoreClient;
+import org.eclipse.jetty.nosql.kvs.IKeyValueStoreClient;
 import org.eclipse.jetty.nosql.kvs.KeyValueStoreClientException;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
@@ -23,7 +23,7 @@ import com.mongodb.WriteResult;
  * @author David Ranalli
  * Jan 28, 2016
  */
-public class MongoClient extends AbstractKeyValueStoreClient implements IExtKeyValueStoreClient {
+public class MongoClient extends AbstractKeyValueStoreClient implements IKeyValueStoreClient {
   private final static Logger log = Log.getLogger( MongoClient.class.getName() );
   /* Jetty session id - key for session */
   private static final String KEY_ID = "id";
@@ -94,28 +94,6 @@ public class MongoClient extends AbstractKeyValueStoreClient implements IExtKeyV
     }
   }
   
-
-  @Override
-  public boolean set( String key, byte[] raw ) throws KeyValueStoreClientException {
-    // there are no references to this method
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public boolean set( String key, byte[] raw, int exp ) throws KeyValueStoreClientException {
-    return set( key, 0, raw, exp );
-  }
-
-  @Override
-  public boolean add( String key, byte[] raw ) throws KeyValueStoreClientException {
-    return add( key, raw, 0 );
-  }
-
-  @Override
-  public boolean add( String key, byte[] raw, int exp ) throws KeyValueStoreClientException {
-    return add( key, 0, raw, exp );
-  }
-
   @Override
   public boolean delete( String key ) throws KeyValueStoreClientException {
     WriteResult result = null;

@@ -16,7 +16,7 @@ import org.eclipse.jetty.util.log.Logger;
  * Jan 29, 2016
  */
 public class JmxMonitorManager {
-  private final static Logger log = Log.getLogger( MongoSessionManager.class.getName() );
+  private static final Logger log = Log.getLogger( MongoSessionManager.class.getName() );
   private static final String PREFIX = "jetty-nosql.";
 
   public static void monitor( Object mbean, String category, String type, String name ) {
@@ -27,7 +27,7 @@ public class JmxMonitorManager {
     catch ( Exception e ) {
       // Throwing runtime exception will not help matters...
       // silently fail and record the problem
-      log.info( "Could not monitor ( add mbean ) " + mbean + " as " + PREFIX + category + ":type=" + type + ",name=" + name, e );
+      log.info( "Could not add mbean " + mbean + " as " + PREFIX + category + ":type=" + type + ",name=" + name, e );
     }
   }
   
@@ -39,7 +39,7 @@ public class JmxMonitorManager {
     catch ( Exception e ) {
       // Throwing runtime exception will not help matters...
       // silently fail and record the problem
-      log.info( "Could not remove monitor ( remoive mbean ) " + PREFIX + category + ":type=" + type + ",name=" + name, e );
+      log.info( "Could not remove mbean " + PREFIX + category + ":type=" + type + ",name=" + name, e );
     }
   }
   

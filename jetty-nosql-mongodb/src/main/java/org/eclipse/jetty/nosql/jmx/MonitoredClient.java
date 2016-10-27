@@ -2,8 +2,8 @@ package org.eclipse.jetty.nosql.jmx;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.eclipse.jetty.nosql.ext.IExtKeyValueStoreClient;
 import org.eclipse.jetty.nosql.kvs.AbstractKeyValueStoreClient;
+import org.eclipse.jetty.nosql.kvs.IKeyValueStoreClient;
 import org.eclipse.jetty.nosql.kvs.KeyValueStoreClientException;
 
 /**
@@ -12,7 +12,7 @@ import org.eclipse.jetty.nosql.kvs.KeyValueStoreClientException;
  * @author David Ranalli
  * Jan 28, 2016
  */
-public class MonitoredClient extends AbstractKeyValueStoreClient implements SessionStorageMBean, IExtKeyValueStoreClient {
+public class MonitoredClient extends AbstractKeyValueStoreClient implements SessionStorageMBean, IKeyValueStoreClient {
   private final AtomicLong updates = new AtomicLong();
   private final AtomicLong inserts = new AtomicLong();
   private final AtomicLong deletes = new AtomicLong();
@@ -25,11 +25,11 @@ public class MonitoredClient extends AbstractKeyValueStoreClient implements Sess
   private final AtomicLong errorTime = new AtomicLong();
   private final AtomicLong dataIn = new AtomicLong();
   private final AtomicLong dataOut = new AtomicLong();
-  private final IExtKeyValueStoreClient client;
+  private final IKeyValueStoreClient client;
   
   public MonitoredClient( AbstractKeyValueStoreClient client ) {
     super( client.getServerString() );
-    this.client = (IExtKeyValueStoreClient)client;
+    this.client = client;
   }
 
   @Override
@@ -80,26 +80,6 @@ public class MonitoredClient extends AbstractKeyValueStoreClient implements Sess
     time.addAndGet( duration );
     if ( bytes != null )
       data.addAndGet( bytes.length );
-  }
-
-  @Override
-  public boolean set( String key, byte[] raw ) throws KeyValueStoreClientException {
-    return set( key, raw, 0 );
-  }
-
-  @Override
-  public boolean set( String key, byte[] raw, int exp ) throws KeyValueStoreClientException {
-    return set( key, 0, raw, exp );
-  }
-
-  @Override
-  public boolean add( String key, byte[] raw ) throws KeyValueStoreClientException {
-    return add( key, raw, 0 );
-  }
-
-  @Override
-  public boolean add( String key, byte[] raw, int exp ) throws KeyValueStoreClientException {
-    return add( key, 0, raw, exp );
   }
 
   @Override

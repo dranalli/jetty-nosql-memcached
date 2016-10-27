@@ -9,16 +9,39 @@ public interface IKeyValueStoreClient {
 
 	public byte[] get(String key) throws KeyValueStoreClientException;
 
-// "set" means "store this data".
-	public boolean set(String key, byte[] raw) throws KeyValueStoreClientException;
-
-	public boolean set(String key, byte[] raw, int exp) throws KeyValueStoreClientException;
-
-// "add" means "store this data, but only if the server *doesn't* already
-// hold data for this key".
-	public boolean add(String key, byte[] raw) throws KeyValueStoreClientException;
-
-	public boolean add(String key, byte[] raw, int exp) throws KeyValueStoreClientException;
 
 	public boolean delete(String key) throws KeyValueStoreClientException;
+	
+	  /**
+	   * Allow checking existence without pulling back all the session data.
+	   * @param key
+	   * @return
+	   * @throws KeyValueStoreClientException
+	   */
+	  public boolean exists(String key) throws KeyValueStoreClientException;
+
+	  /**
+	   * Store session data with version as session meta data.
+	   * 
+	   * @param key
+	   * @param version
+	   * @param raw
+	   * @return
+	   * @throws KeyValueStoreClientException
+	   */
+	  public boolean set(String key, long version, byte[] raw ) throws KeyValueStoreClientException;
+
+	  public boolean set(String key, long version, byte[] raw, int exp) throws KeyValueStoreClientException;
+
+	  public boolean add(String key, long version, byte[] raw) throws KeyValueStoreClientException;
+
+	  public boolean add(String key, long version, byte[] raw, int exp) throws KeyValueStoreClientException;
+
+	  /**
+	   * Allow querying version without pulling back all the session data.
+	   * @param key
+	   * @return
+	   */
+	  public long version( String key );
+
 }

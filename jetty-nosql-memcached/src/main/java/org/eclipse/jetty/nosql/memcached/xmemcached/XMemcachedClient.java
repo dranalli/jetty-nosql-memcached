@@ -2,13 +2,13 @@ package org.eclipse.jetty.nosql.memcached.xmemcached;
 
 import java.io.IOException;
 
+import org.eclipse.jetty.nosql.kvs.KeyValueStoreClientException;
+import org.eclipse.jetty.nosql.memcached.AbstractMemcachedClient;
+
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.transcoders.Transcoder;
 import net.rubyeye.xmemcached.utils.AddrUtil;
-
-import org.eclipse.jetty.nosql.kvs.KeyValueStoreClientException;
-import org.eclipse.jetty.nosql.memcached.AbstractMemcachedClient;
 
 public class XMemcachedClient extends AbstractMemcachedClient {
 	private static final int FOREVER = 0;
@@ -25,6 +25,7 @@ public class XMemcachedClient extends AbstractMemcachedClient {
 		this._transcoder = new NullTranscoder();
 	}
 
+	@Override
 	public boolean establish() throws KeyValueStoreClientException {
 		if (_client != null) {
 			if (!_client.isShutdown()) {
@@ -49,6 +50,7 @@ public class XMemcachedClient extends AbstractMemcachedClient {
 		return builder;
 	}
 
+	@Override
 	public boolean shutdown() throws KeyValueStoreClientException {
 		if (_client != null) {
 			try {
@@ -62,10 +64,12 @@ public class XMemcachedClient extends AbstractMemcachedClient {
 		return true;
 	}
 
+	@Override
 	public boolean isAlive() {
 		return this._client != null && !this._client.isShutdown();
 	}
 
+	@Override
 	public byte[] get(String key) throws KeyValueStoreClientException {
 		if (!isAlive()) {
 			throw(new KeyValueStoreClientException(new IllegalStateException("client not established")));
@@ -79,11 +83,13 @@ public class XMemcachedClient extends AbstractMemcachedClient {
 		return raw;
 	}
 
-	public boolean set(String key, byte[] raw) throws KeyValueStoreClientException {
-		return this.set(key, raw, FOREVER);
+	@Override
+	public boolean set(String key, long version, byte[] raw) throws KeyValueStoreClientException {
+		return this.set(key, version, raw, FOREVER);
 	}
 
-	public boolean set(String key, byte[] raw, int exp) throws KeyValueStoreClientException {
+	@Override
+	public boolean set(String key, long version, byte[] raw, int exp) throws KeyValueStoreClientException {
 		if (!isAlive()) {
 			throw(new KeyValueStoreClientException(new IllegalStateException("client not established")));
 		}
@@ -96,11 +102,13 @@ public class XMemcachedClient extends AbstractMemcachedClient {
 		return result;
 	}
 
-	public boolean add(String key, byte[] raw) throws KeyValueStoreClientException {
-		return this.add(key, raw, FOREVER);
+	@Override
+	public boolean add(String key, long version, byte[] raw) throws KeyValueStoreClientException {
+		return this.add(key, version, raw, FOREVER);
 	}
 
-	public boolean add(String key, byte[] raw, int exp) throws KeyValueStoreClientException {
+	@Override
+  public boolean add(String key, long version, byte[] raw, int exp) throws KeyValueStoreClientException {
 		if (!isAlive()) {
 			throw(new KeyValueStoreClientException(new IllegalStateException("client not established")));
 		}
@@ -113,7 +121,8 @@ public class XMemcachedClient extends AbstractMemcachedClient {
 		return result;
 	}
 
-	public boolean delete(String key) throws KeyValueStoreClientException {
+	@Override
+  public boolean delete(String key) throws KeyValueStoreClientException {
 		if (!isAlive()) {
 			throw(new KeyValueStoreClientException(new IllegalStateException("client not established")));
 		}
@@ -125,4 +134,18 @@ public class XMemcachedClient extends AbstractMemcachedClient {
 		}
 		return result;
 	}
+
+	/**
+	 * Currently in-efficient... see if there is an exists for memcache
+	 */
+  @Override
+  public boolean exists( String key ) throws KeyValueStoreClientException {
+    return get( key ) != null;
+  }
+
+  @Override
+  public long version( String key ) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 }

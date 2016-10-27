@@ -43,7 +43,7 @@ public final class Hash {
    * @param bytes
    * @return
    */
-  public static String getMD5Hex( byte[] bytes ) {
+  public static String getHashedHex( byte[] bytes ) {
     Hash md5 = new Hash();
     md5.update( bytes );
     return asHex( md5.digest() );

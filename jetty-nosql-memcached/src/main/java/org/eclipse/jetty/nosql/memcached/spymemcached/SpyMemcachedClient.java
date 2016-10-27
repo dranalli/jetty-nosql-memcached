@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jetty.nosql.kvs.KeyValueStoreClientException;
+import org.eclipse.jetty.nosql.memcached.AbstractMemcachedClient;
+
 import net.spy.memcached.AddrUtil;
 import net.spy.memcached.ConnectionFactory;
 import net.spy.memcached.ConnectionFactoryBuilder;
 import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.transcoders.Transcoder;
-
-import org.eclipse.jetty.nosql.kvs.KeyValueStoreClientException;
-import org.eclipse.jetty.nosql.memcached.AbstractMemcachedClient;
 
 public class SpyMemcachedClient extends AbstractMemcachedClient {
 	private static final int FOREVER = 0;
@@ -27,6 +27,7 @@ public class SpyMemcachedClient extends AbstractMemcachedClient {
 		this._transcoder = new NullTranscoder();
 	}
 
+	@Override
 	public boolean establish() throws KeyValueStoreClientException {
 		if (_client != null) {
 			shutdown();
@@ -53,7 +54,8 @@ public class SpyMemcachedClient extends AbstractMemcachedClient {
 		return factoryBuilder.build();
 	}
 
-	public boolean shutdown() throws KeyValueStoreClientException {
+	@Override
+  public boolean shutdown() throws KeyValueStoreClientException {
 		if (_client != null) {
 			_client.shutdown();
 			_client = null;
@@ -61,11 +63,13 @@ public class SpyMemcachedClient extends AbstractMemcachedClient {
 		return true;
 	}
 
-	public boolean isAlive() {
+	@Override
+  public boolean isAlive() {
 		return _client != null;
 	}
 
-	public byte[] get(String key) throws KeyValueStoreClientException {
+	@Override
+  public byte[] get(String key) throws KeyValueStoreClientException {
 		if (!isAlive()) {
 			throw(new KeyValueStoreClientException(new IllegalStateException("client not established")));
 		}
@@ -78,12 +82,14 @@ public class SpyMemcachedClient extends AbstractMemcachedClient {
 		}
 		return raw;
 	}
-
-	public boolean set(String key, byte[] raw) throws KeyValueStoreClientException {
-		return this.set(key, raw, FOREVER);
+	
+	@Override
+	public boolean set(String key, long version, byte[] raw) throws KeyValueStoreClientException {
+		return this.set(key, version, raw, FOREVER);
 	}
 
-	public boolean set(String key, byte[] raw, int exp) throws KeyValueStoreClientException {
+	@Override
+	public boolean set(String key, long version, byte[] raw, int exp) throws KeyValueStoreClientException {
 		if (!isAlive()) {
 			throw(new KeyValueStoreClientException(new IllegalStateException("client not established")));
 		}
@@ -97,11 +103,13 @@ public class SpyMemcachedClient extends AbstractMemcachedClient {
 		return result;
 	}
 
-	public boolean add(String key, byte[] raw) throws KeyValueStoreClientException {
-		return this.add(key, raw, FOREVER);
+	@Override
+	public boolean add(String key, long version, byte[] raw) throws KeyValueStoreClientException {
+		return this.add(key, version, raw, FOREVER);
 	}
 
-	public boolean add(String key, byte[] raw, int exp) throws KeyValueStoreClientException {
+	@Override
+	public boolean add(String key, long version, byte[] raw, int exp) throws KeyValueStoreClientException {
 		if (!isAlive()) {
 			throw(new KeyValueStoreClientException(new IllegalStateException("client not established")));
 		}
@@ -115,7 +123,8 @@ public class SpyMemcachedClient extends AbstractMemcachedClient {
 		return result;
 	}
 
-	public boolean delete(String key) throws KeyValueStoreClientException {
+	@Override
+  public boolean delete(String key) throws KeyValueStoreClientException {
 		if (!isAlive()) {
 			throw(new KeyValueStoreClientException(new IllegalStateException("client not established")));
 		}
@@ -128,4 +137,18 @@ public class SpyMemcachedClient extends AbstractMemcachedClient {
 		}
 		return result;
 	}
+
+	/** 
+	 * Inefficient right now. determine if this is possible in memcache
+	 */
+  @Override
+  public boolean exists( String key ) throws KeyValueStoreClientException {
+    return get( key ) != null;
+  }
+
+  @Override
+  public long version( String key ) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 }

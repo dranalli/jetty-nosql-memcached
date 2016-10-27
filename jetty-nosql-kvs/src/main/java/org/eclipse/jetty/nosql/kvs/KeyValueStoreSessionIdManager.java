@@ -108,6 +108,7 @@ public abstract class KeyValueStoreSessionIdManager extends AbstractSessionIdMan
     /**
      * is the session id known to memcached, and is it valid
      */
+    @Override
     public boolean idInUse(final String idInCluster)
     {
         return getKey(idInCluster) != null; // note "null" may also mean be caused by connection problem. Anyway: Treating this as "not in use"
@@ -116,6 +117,7 @@ public abstract class KeyValueStoreSessionIdManager extends AbstractSessionIdMan
     }
 
     /* ------------------------------------------------------------ */
+    @Override
     public void addSession(final HttpSession session)
     {
         if (session == null)
@@ -127,12 +129,14 @@ public abstract class KeyValueStoreSessionIdManager extends AbstractSessionIdMan
     }
 
     /* ------------------------------------------------------------ */
+    @Override
     public void removeSession(final HttpSession session)
     {
         // nop
     }
 
     /* ------------------------------------------------------------ */
+    @Override
     public void invalidateAll(final String sessionId)
     {
         // tell all contexts that may have a session object with this id to
@@ -153,6 +157,7 @@ public abstract class KeyValueStoreSessionIdManager extends AbstractSessionIdMan
     }
 
     /* ------------------------------------------------------------ */
+    @Override
     public String getClusterId(final String nodeId)
     {
         if (nodeId == null)
@@ -164,6 +169,7 @@ public abstract class KeyValueStoreSessionIdManager extends AbstractSessionIdMan
     }
 
     /* ------------------------------------------------------------ */
+    @Override
     public String getNodeId(final String clusterId, final HttpServletRequest request)
     {
         if (clusterId == null)
@@ -212,7 +218,7 @@ public abstract class KeyValueStoreSessionIdManager extends AbstractSessionIdMan
         boolean result = false;
         try
         {
-            result = _client.set(mangleKey(idInCluster), raw, expiry);
+            result = _client.set(mangleKey(idInCluster), 0 , raw, expiry);
         }
         catch (KeyValueStoreClientException error)
         {
@@ -236,7 +242,7 @@ public abstract class KeyValueStoreSessionIdManager extends AbstractSessionIdMan
         boolean result = false;
         try
         {
-            result = _client.add(mangleKey(idInCluster), raw, expiry);
+            result = _client.add(mangleKey(idInCluster), 0, raw, expiry);
         }
         catch (KeyValueStoreClientException error)
         {

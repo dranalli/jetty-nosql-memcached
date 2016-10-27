@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.eclipse.jetty.nosql.ext.IExtKeyValueStoreClient;
 import org.eclipse.jetty.nosql.jmx.MonitoredClient;
 import org.eclipse.jetty.nosql.kvs.AbstractKeyValueStoreClient;
 import org.eclipse.jetty.nosql.kvs.KeyValueStoreClientException;
@@ -89,7 +88,7 @@ public class MongoSessionIdManager extends KeyValueStoreSessionIdManager {
       boolean exists = false;
       try
       {
-          exists = ( (IExtKeyValueStoreClient)_client ).exists(mangleKey(idInCluster));
+          exists = _client.exists(mangleKey(idInCluster));
       }
       catch (KeyValueStoreClientException error)
       {
@@ -100,7 +99,7 @@ public class MongoSessionIdManager extends KeyValueStoreSessionIdManager {
   
   protected long version( final String idInCluster ) {
     log.debug("version: id=" + idInCluster);
-    return ( (IExtKeyValueStoreClient)_client ).version(mangleKey(idInCluster));
+    return _client.version(mangleKey(idInCluster));
   }
 
   protected boolean setKey( String mangleKey, long version, byte[] raw, int maxInactiveInterval ) {
@@ -108,7 +107,7 @@ public class MongoSessionIdManager extends KeyValueStoreSessionIdManager {
     boolean exists = false;
     try
     {
-        exists = ( (IExtKeyValueStoreClient)_client ).set( mangleKey, version, raw, maxInactiveInterval );
+        exists = _client.set( mangleKey, version, raw, maxInactiveInterval );
     }
     catch (KeyValueStoreClientException error)
     {
