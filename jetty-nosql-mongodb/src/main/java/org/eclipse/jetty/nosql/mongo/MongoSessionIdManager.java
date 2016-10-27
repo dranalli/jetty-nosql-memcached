@@ -6,18 +6,18 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.eclipse.jetty.nosql.jmx.MonitoredClient;
 import org.eclipse.jetty.nosql.kvs.AbstractKeyValueStoreClient;
 import org.eclipse.jetty.nosql.kvs.KeyValueStoreClientException;
 import org.eclipse.jetty.nosql.kvs.KeyValueStoreSessionIdManager;
+import org.eclipse.jetty.nosql.kvs.jmx.MonitoredClient;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 
 public class MongoSessionIdManager extends KeyValueStoreSessionIdManager {
-    private final static String DEFAULT_JNDI_NAME = "session/mongo";
-	private final static Logger log = Log.getLogger( MongoSessionIdManager.class.getName() );
-    private final static String __NEW_SESSION_ID="org.eclipse.jetty.server.newSessionId";
+    private static final String DEFAULT_JNDI_NAME = "session/mongo";
+	private static final Logger log = Log.getLogger( MongoSessionIdManager.class.getName() );
+    private static final String NEW_SESSION_ID = "org.eclipse.jetty.server.newSessionId";
     
 	public MongoSessionIdManager(Server server) throws IOException {
 		this(server, DEFAULT_JNDI_NAME);
@@ -50,23 +50,26 @@ public class MongoSessionIdManager extends KeyValueStoreSessionIdManager {
 	
   @Override
   public String newSessionId( HttpServletRequest request, long created ) {
-    if ( request == null ) return newSessionId( created );
+    if ( request == null ) 
+      return newSessionId( created );
 
     // A requested session ID can only be used if it is in use already.
-    String requested_id = request.getRequestedSessionId();
-    if ( requested_id != null ) {
-      String cluster_id = getClusterId( requested_id );
-      if ( idInUse( cluster_id ) ) return cluster_id;
+    String requestedId = request.getRequestedSessionId();
+    if ( requestedId != null ) {
+      String clusterId = getClusterId( requestedId );
+      if ( idInUse( clusterId ) ) 
+        return clusterId;
     }
 
     // Else reuse any new session ID already defined for this request.
-    String new_id = (String)request.getAttribute( __NEW_SESSION_ID );
-    if ( new_id != null && idInUse( new_id ) ) return new_id;
+    String newId = (String)request.getAttribute( NEW_SESSION_ID );
+    if ( newId != null && idInUse( newId ) ) 
+      return newId;
 
     // pick a new unique ID!
     String id = newSessionId( request.hashCode() );
 
-    request.setAttribute( __NEW_SESSION_ID, id );
+    request.setAttribute( NEW_SESSION_ID, id );
     return id;
   }
 

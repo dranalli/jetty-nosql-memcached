@@ -1,4 +1,4 @@
-package org.eclipse.jetty.nosql.jmx;
+package org.eclipse.jetty.nosql.kvs.jmx;
 
 public class SessionStorage implements SessionStorageMBean {
 

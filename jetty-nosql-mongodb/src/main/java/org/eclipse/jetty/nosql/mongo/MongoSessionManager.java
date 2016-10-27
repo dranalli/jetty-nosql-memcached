@@ -142,13 +142,13 @@ public class MongoSessionManager extends KeyValueStoreSessionManager {
     @Override
     protected boolean setKey(final String idInCluster, final ISerializableSession data) throws TranscoderException
     {
-        SessionHolder sh = localSessions.get( idInCluster );
+        SessionHolder localSession = localSessions.get( idInCluster );
         String hash = null;
         
-        if ( sh != null ) {
+        if ( localSession != null ) {
           hash = getBareSessionHash( data.getAttributeMap() );
           
-          if( hash.equals( sh.hash ) )
+          if( hash.equals( localSession.hash ) )
             return getSessionIdManager().setKey(getSessionIdManager().mangleKey(idInCluster), data.getVersion(), null,
                 getMaxInactiveInterval());
         }
@@ -161,8 +161,8 @@ public class MongoSessionManager extends KeyValueStoreSessionManager {
         {
             boolean result =  getSessionIdManager().setKey(getSessionIdManager().mangleKey(idInCluster), data.getVersion(), raw,
                 getMaxInactiveInterval());
-            if ( sh != null && hash != null )
-              sh.hash = hash;
+            if ( localSession != null )
+              localSession.hash = hash;
             return result;
         }
     }
